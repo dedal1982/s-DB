@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Admin Panel</title>
+  </head>
+  <body>
+    <h2>Admin Dashboard</h2>
+    <form id="storyForm">
+      <h3>Add Story</h3>
+      <input type="text" name="title" placeholder="Title" required /><br />
+      <input type="text" name="genre" placeholder="Genre" required /><br />
+      <input
+        type="text"
+        name="ageRating"
+        placeholder="Age Rating"
+        required
+      /><br />
+      <input
+        type="text"
+        name="coverResId"
+        placeholder="Cover Resource ID"
+        required
+      /><br />
+      <textarea name="rawContent" placeholder="Content" required></textarea
+      ><br />
+      <button type="submit">Add Story</button>
+    </form>
+
+    <h3>Existing Stories</h3>
+    <ul id="storiesList"></ul>
+
+    <script>
+      // Получить куки по имени
+      const getCookie = (name) => {
+        const value = `; ${document.cookie}`;
+        const parts = value.split(`; ${name}=`);
+        if (parts.length === 2) return parts.pop().split(";").shift();
+      };
+
+      const token = getCookie("token");
+
+      // Загрузка и отображение рассказов
+      fetch("/stories")
+        .then((res) => res.json())
+        .then((stories) => {
+          const list = document.getElementById("storiesList");
+          stories.forEach((story) => {
+            const li = document.createElement("li");
+            li.innerHTML = `
+            <strong>${story.title}</strong> (${story.genre}) 
+            <button onclick="deleteStory('${story._id}')">Delete</button>
+            <button onclick="editStory('${story._id}')">Edit</button>
+          `;
+            list.appendChild(li);
+          });
+        });
+
+      // Обработчик формы добавления
+      document.getElementById("storyForm").addEventListener("submit", (e) => {
+        e.preventDefault();
+        const formData = new FormData(e.target);
+        const data = {};
+        formData.forEach((value, key) => (data[key] = value));
+
+        fetch("/stories", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`,
+          },
+          body: JSON.stringify(data),
+        })
+          .then((res) => res.json())
+          .then((story) => {
+            alert("Story added");
+            location.reload();
+          });
+      });
+
+      // Удаление рассказа
+      function deleteStory(id) {
+        fetch("/stories/" + id, {
+          method: "DELETE",
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        })
+          .then((res) => res.json())
+          .then(() => {
+            alert("Deleted");
+            location.reload();
+          });
+      }
+
+      // Функция редактирования (может быть реализована позже)
+      function editStory(id) {
+        alert("Edit feature not implemented");
+      }
+    </script>
+  </body>
+</html>
