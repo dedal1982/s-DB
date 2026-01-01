@@ -1,0 +1,62 @@
+@import url("https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&display=swap");
+.page {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  min-height: 100vh;
+  font-family: "Inter", sans-serif;
+  font-synthesis: none;
+  font-optical-sizing: auto;
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  -webkit-text-size-adjust: 100%;
+  -ms-text-size-adjust: 100%;
+  -moz-text-size-adjust: 100%;
+  background-color: #f0ffff;
+  position: relative;
+}
+.main {
+  position: absolute;
+  top: 30%;
+  left: 50%;
+  transform: translate(-50%, -30%);
+  display: flex;
+  align-items: center;
+  flex-direction: column;
+}
+.main form {
+  font-family: "Inter", sans-serif;
+  max-width: 300px;
+  width: 100%;
+  display: flex;
+  align-items: center;
+  flex-direction: column;
+  padding: 2.125rem 1.5rem;
+  box-sizing: border-box;
+  border: 1px solid #efc89a;
+  border: 1px solid #000;
+}
+.main form input {
+  width: 100%;
+  border-radius: 0.3rem;
+  border-color: #e5e5e5;
+  padding: 1em 1.8em;
+  box-sizing: border-box;
+  color: #000000;
+  margin-top: 0.4rem;
+}
+input:focus::placeholder,
+textarea:focus::placeholder {
+  color: transparent;
+}
+.main form button {
+  width: 100%;
+  border-radius: 0.5em;
+  padding: 1em 1.8em;
+  box-sizing: border-box;
+  box-shadow: 0 0em 0em rgba(0, 0, 0, 0.2);
+  background: #1d4694;
+  border-color: transparent;
+  color: #ffffff;
+}
