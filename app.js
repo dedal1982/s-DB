@@ -133,7 +133,7 @@ app.post("/stories", checkAdminAuth, async (req, res) => {
 
 app.delete("/stories/:id", checkAdminAuth, async (req, res) => {
   await Story.findByIdAndDelete(req.params.id);
-  res.json({ message: "Deleted" });
+  res.json({ message: "Удалено" });
 });
 
 app.put("/stories/:id", checkAdminAuth, async (req, res) => {
