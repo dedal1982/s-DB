@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+<!-- <!DOCTYPE html>
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
@@ -26,7 +26,7 @@
       /><br />
       <textarea name="rawContent" placeholder="Content" required></textarea
       ><br />
-      <button type="submit">Add Story</button>
+      <button type="submitBtn">Add Story</button>
     </form>
 
     <h3>Existing Stories</h3>
@@ -98,6 +98,204 @@
       function editStory(_id) {
         alert("Edit feature not implemented");
       }
+    </script>
+    
+  </body>
+</html> -->
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Админ панель</title>
+  </head>
+  <body>
+    <h2>Admin Dashboard</h2>
+
+    <!-- Форма добавления рассказа -->
+    <form id="storyForm">
+      <h3>Add Story</h3>
+      <input type="text" name="id" placeholder="id" required /><br />
+      <input type="text" name="title" placeholder="Title" required /><br />
+      <input type="text" name="genre" placeholder="Genre" required /><br />
+      <input
+        type="text"
+        name="ageRating"
+        placeholder="Age Rating"
+        required
+      /><br />
+      <input
+        type="text"
+        name="coverResId"
+        placeholder="Cover Resource ID"
+        required
+      /><br />
+      <textarea name="rawContent" placeholder="Content" required></textarea
+      ><br />
+      <button type="submit">Add Story</button>
+    </form>
+
+    <!-- Форма редактирования рассказа (скрытая по умолчанию) -->
+    <h3>Edit Story</h3>
+    <form
+      id="editStoryForm"
+      style="
+        display: none;
+        border: 1px solid #ccc;
+        padding: 10px;
+        margin-top: 20px;
+      "
+    >
+      <input type="hidden" name="edit_id" />
+      <input type="text" name="id" placeholder="id" required /><br />
+      <input type="text" name="title" placeholder="Title" required /><br />
+      <input type="text" name="genre" placeholder="Genre" required /><br />
+      <input
+        type="text"
+        name="ageRating"
+        placeholder="Age Rating"
+        required
+      /><br />
+      <input
+        type="text"
+        name="coverResId"
+        placeholder="Cover Resource ID"
+        required
+      /><br />
+      <textarea name="rawContent" placeholder="Content" required></textarea
+      ><br />
+      <button type="submit">Save Changes</button>
+      <button type="button" onclick="hideEditForm()">Cancel</button>
+    </form>
+
+    <h3>Existing Stories</h3>
+    <ul id="storiesList"></ul>
+
+    <script>
+      // Получить куки по имени
+      const getCookie = (name) => {
+        const value = `; ${document.cookie}`;
+        const parts = value.split(`; ${name}=`);
+        if (parts.length === 2) return parts.pop().split(";").shift();
+      };
+
+      const token = getCookie("token");
+
+      // Загрузка и отображение рассказов
+      fetch("/stories")
+        .then((res) => res.json())
+        .then((stories) => {
+          const list = document.getElementById("storiesList");
+          list.innerHTML = ""; // очистка перед добавлением
+          stories.forEach((story) => {
+            const li = document.createElement("li");
+            li.innerHTML = `
+            <strong>${story.title}</strong> (${story.genre}) (id=${story.id})
+            <button onclick="deleteStory('${story._id}')">Delete</button>
+            <button onclick="editStory('${story._id}')">Edit</button>
+          `;
+            list.appendChild(li);
+          });
+        });
+
+      // Обработчик формы добавления
+      document.getElementById("storyForm").addEventListener("submit", (e) => {
+        e.preventDefault();
+        const formData = new FormData(e.target);
+        const data = {};
+        formData.forEach((value, key) => (data[key] = value));
+
+        fetch("/stories", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`,
+          },
+          body: JSON.stringify(data),
+        })
+          .then((res) => res.json())
+          .then((story) => {
+            alert("Story added");
+            location.reload();
+          });
+      });
+
+      // Удаление рассказа
+      function deleteStory(id) {
+        fetch("/stories/" + id, {
+          method: "DELETE",
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        })
+          .then((res) => res.json())
+          .then(() => {
+            alert("Deleted");
+            location.reload();
+          });
+      }
+
+      // Показать форму редактирования и заполнить данными
+      function editStory(_id) {
+        // Получить список рассказов и найти тот, который нужно редактировать
+        fetch("/stories")
+          .then((res) => res.json())
+          .then((stories) => {
+            const story = stories.find((s) => s._id === _id);
+            if (story) {
+              // Заполнить форму редактирования
+              const form = document.getElementById("editStoryForm");
+              form.style.display = "block";
+              form.querySelector('input[name="edit_id"]').value = story._id;
+              form.querySelector('input[name="id"]').value = story.id;
+              form.querySelector('input[name="title"]').value = story.title;
+              form.querySelector('input[name="genre"]').value = story.genre;
+              form.querySelector('input[name="ageRating"]').value =
+                story.ageRating;
+              form.querySelector('input[name="coverResId"]').value =
+                story.coverResId;
+              form.querySelector('textarea[name="rawContent"]').value =
+                story.rawContent;
+            }
+          });
+      }
+
+      // Скрыть форму редактирования
+      function hideEditForm() {
+        document.getElementById("editStoryForm").style.display = "none";
+      }
+
+      // Обработка сохранения изменений
+      document
+        .getElementById("editStoryForm")
+        .addEventListener("submit", (e) => {
+          e.preventDefault();
+          const form = e.target;
+          const id = form.querySelector('input[name="edit_id"]').value;
+          const data = {
+            id: form.querySelector('input[name="id"]').value,
+            title: form.querySelector('input[name="title"]').value,
+            genre: form.querySelector('input[name="genre"]').value,
+            ageRating: form.querySelector('input[name="ageRating"]').value,
+            coverResId: form.querySelector('input[name="coverResId"]').value,
+            rawContent: form.querySelector('textarea[name="rawContent"]').value,
+          };
+
+          fetch("/stories/" + id, {
+            method: "PUT",
+            headers: {
+              "Content-Type": "application/json",
+              Authorization: `Bearer ${token}`,
+            },
+            body: JSON.stringify(data),
+          })
+            .then((res) => res.json())
+            .then((updatedStory) => {
+              alert("Story updated");
+              hideEditForm();
+              location.reload();
+            });
+        });
     </script>
   </body>
 </html>
