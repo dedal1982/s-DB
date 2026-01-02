@@ -118,8 +118,15 @@ app.get("/admin/dashboard", checkAdminAuth, (req, res) => {
 
 // CRUD маршруты для рассказов — только для админа
 app.post("/stories", checkAdminAuth, async (req, res) => {
-  const { title, genre, ageRating, coverResId, rawContent } = req.body;
-  const story = new Story({ title, genre, ageRating, coverResId, rawContent });
+  const { id, title, genre, ageRating, coverResId, rawContent } = req.body;
+  const story = new Story({
+    id,
+    title,
+    genre,
+    ageRating,
+    coverResId,
+    rawContent,
+  });
   await story.save();
   res.json(story);
 });
